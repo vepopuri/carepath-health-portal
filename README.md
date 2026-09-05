@@ -15,6 +15,7 @@ member, Jordan Alvarez) and can:
 
 - **Overview** — plan snapshot, deductible/out-of-pocket progress, recent activity, who's covered.
 - **My Plan** — coverage details by category, deductible and out-of-pocket tracking (individual and family).
+- **Family** — see everyone covered under the plan, add a dependent, or remove one.
 - **Find Care** — search and filter the provider directory; view a provider's detail page.
 - **Claims** — track claims for the member and their dependents; file a new claim; see a full
   cost breakdown (billed, allowed, deductible/copay/coinsurance applied, plan paid, member owes).
@@ -57,7 +58,6 @@ npm run lint      # oxlint
 This first pass covers the core "check my coverage, find a doctor, file and track a claim, pay my
 bill" loop. Not yet built (left for a fast-follow, same as Octopus's own iterative history):
 
-- A **Family** page for managing dependents directly (today they're visible on Overview only).
 - A **Messages** / support-ticket page.
 - A **Profile / Settings** page (contact info, notification preferences).
 - Provider detail pages don't yet support real appointment booking (deliberately disabled with a

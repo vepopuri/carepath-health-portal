@@ -1,4 +1,4 @@
-export { memberService } from './memberService';
+export { memberService, type AddDependentInput, type CoveredPerson } from './memberService';
 export { planService } from './planService';
 export { providerService, type ProviderFilters } from './providerService';
 export { claimService, type ClaimFilters, type FileClaimInput } from './claimService';

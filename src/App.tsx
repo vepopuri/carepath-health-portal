@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom';
 import { AppShell } from './components/shell/AppShell';
 import { OverviewPage } from './pages/OverviewPage';
 import { MyPlanPage } from './pages/MyPlanPage';
+import { FamilyPage } from './pages/FamilyPage';
 import { FindCarePage } from './pages/FindCarePage';
 import { ProviderDetailsPage } from './pages/ProviderDetailsPage';
 import { ClaimsPage } from './pages/ClaimsPage';
@@ -16,6 +17,7 @@ function App() {
       <Route element={<AppShell />}>
         <Route path="/" element={<OverviewPage />} />
         <Route path="/plan" element={<MyPlanPage />} />
+        <Route path="/family" element={<FamilyPage />} />
         <Route path="/find-care" element={<FindCarePage />} />
         <Route path="/find-care/:providerId" element={<ProviderDetailsPage />} />
         <Route path="/claims" element={<ClaimsPage />} />

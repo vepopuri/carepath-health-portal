@@ -22,23 +22,23 @@ import AddIcon from '@mui/icons-material/Add';
 import { PageHeader } from '../components/common/PageHeader';
 import { StatusBadge } from '../components/common/StatusBadge';
 import { EmptyState } from '../components/common/EmptyState';
-import { priorAuthService, providerService } from '../services';
-import { coveredPeople } from '../data/member';
+import { priorAuthService, providerService, memberService } from '../services';
+import type { CoveredPerson } from '../services';
 import type { PriorAuthorization, Provider } from '../types/domain';
 
-function RequestAuthDialog({ open, onClose, providers, onRequested }: { open: boolean; onClose: () => void; providers: Provider[]; onRequested: (p: PriorAuthorization) => void }) {
-  const [patientId, setPatientId] = useState(coveredPeople[0].id);
+function RequestAuthDialog({ open, onClose, providers, coveredPeople, onRequested }: { open: boolean; onClose: () => void; providers: Provider[]; coveredPeople: CoveredPerson[]; onRequested: (p: PriorAuthorization) => void }) {
+  const [patientId, setPatientId] = useState('');
   const [providerId, setProviderId] = useState('');
   const [serviceRequested, setServiceRequested] = useState('');
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (open) {
-      setPatientId(coveredPeople[0].id);
+      setPatientId(coveredPeople[0]?.id ?? '');
       setProviderId('');
       setServiceRequested('');
     }
-  }, [open]);
+  }, [open, coveredPeople]);
 
   async function handleSubmit() {
     const patient = coveredPeople.find((p) => p.id === patientId)!;
@@ -88,7 +88,7 @@ function RequestAuthDialog({ open, onClose, providers, onRequested }: { open: bo
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
-        <Button variant="contained" disabled={saving || !providerId || !serviceRequested.trim()} onClick={handleSubmit}>
+        <Button variant="contained" disabled={saving || !patientId || !providerId || !serviceRequested.trim()} onClick={handleSubmit}>
           {saving ? 'Submitting…' : 'Submit request'}
         </Button>
       </DialogActions>
@@ -99,6 +99,7 @@ function RequestAuthDialog({ open, onClose, providers, onRequested }: { open: bo
 export function PriorAuthorizationsPage() {
   const [requests, setRequests] = useState<PriorAuthorization[]>([]);
   const [providers, setProviders] = useState<Provider[]>([]);
+  const [coveredPeople, setCoveredPeople] = useState<CoveredPerson[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -113,6 +114,7 @@ export function PriorAuthorizationsPage() {
   useEffect(() => {
     refresh();
     providerService.list({ network: 'in_network' }).then(setProviders);
+    memberService.getCoveredPeople().then(setCoveredPeople);
   }, []);
 
   return (
@@ -167,6 +169,7 @@ export function PriorAuthorizationsPage() {
         open={dialogOpen}
         onClose={() => setDialogOpen(false)}
         providers={providers}
+        coveredPeople={coveredPeople}
         onRequested={() => {
           setDialogOpen(false);
           refresh();

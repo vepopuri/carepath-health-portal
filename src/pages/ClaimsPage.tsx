@@ -26,8 +26,8 @@ import { useNavigate } from 'react-router-dom';
 import { PageHeader } from '../components/common/PageHeader';
 import { StatusBadge } from '../components/common/StatusBadge';
 import { EmptyState } from '../components/common/EmptyState';
-import { claimService, providerService } from '../services';
-import { coveredPeople } from '../data/member';
+import { claimService, providerService, memberService } from '../services';
+import type { CoveredPerson } from '../services';
 import type { Claim, ClaimStatus, Provider } from '../types/domain';
 
 const FILTERS: { id: ClaimStatus | 'all'; label: string }[] = [
@@ -43,8 +43,8 @@ function formatMoney(n: number): string {
   return `$${n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
-function FileClaimDialog({ open, onClose, providers, onFiled }: { open: boolean; onClose: () => void; providers: Provider[]; onFiled: (c: Claim) => void }) {
-  const [patientId, setPatientId] = useState(coveredPeople[0].id);
+function FileClaimDialog({ open, onClose, providers, coveredPeople, onFiled }: { open: boolean; onClose: () => void; providers: Provider[]; coveredPeople: CoveredPerson[]; onFiled: (c: Claim) => void }) {
+  const [patientId, setPatientId] = useState('');
   const [providerId, setProviderId] = useState('');
   const [serviceDate, setServiceDate] = useState('');
   const [serviceType, setServiceType] = useState('');
@@ -52,12 +52,12 @@ function FileClaimDialog({ open, onClose, providers, onFiled }: { open: boolean;
 
   useEffect(() => {
     if (open) {
-      setPatientId(coveredPeople[0].id);
+      setPatientId(coveredPeople[0]?.id ?? '');
       setProviderId('');
       setServiceDate('');
       setServiceType('');
     }
-  }, [open]);
+  }, [open, coveredPeople]);
 
   async function handleSubmit() {
     const patient = coveredPeople.find((p) => p.id === patientId)!;
@@ -119,7 +119,7 @@ function FileClaimDialog({ open, onClose, providers, onFiled }: { open: boolean;
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
-        <Button variant="contained" disabled={saving || !providerId || !serviceType.trim()} onClick={handleSubmit}>
+        <Button variant="contained" disabled={saving || !patientId || !providerId || !serviceType.trim()} onClick={handleSubmit}>
           {saving ? 'Submitting…' : 'Submit claim'}
         </Button>
       </DialogActions>
@@ -132,6 +132,7 @@ export function ClaimsPage() {
   const [statusFilter, setStatusFilter] = useState<ClaimStatus | 'all'>('all');
   const [claims, setClaims] = useState<Claim[]>([]);
   const [providers, setProviders] = useState<Provider[]>([]);
+  const [coveredPeople, setCoveredPeople] = useState<CoveredPerson[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -146,6 +147,7 @@ export function ClaimsPage() {
   useEffect(() => {
     refresh();
     providerService.list({ network: 'in_network' }).then(setProviders);
+    memberService.getCoveredPeople().then(setCoveredPeople);
   }, []);
 
   const rows = useMemo(() => (statusFilter === 'all' ? claims : claims.filter((c) => c.status === statusFilter)), [claims, statusFilter]);
@@ -225,6 +227,7 @@ export function ClaimsPage() {
         open={dialogOpen}
         onClose={() => setDialogOpen(false)}
         providers={providers}
+        coveredPeople={coveredPeople}
         onFiled={(claim) => {
           setDialogOpen(false);
           refresh();

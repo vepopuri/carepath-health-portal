@@ -236,9 +236,12 @@ export function OverviewPage() {
         </Grid>
         <Grid size={{ xs: 12, lg: 5 }}>
           <Paper sx={{ p: 2.5, height: '100%' }}>
-            <Typography variant="h3" sx={{ mb: 1.5 }}>
-              Who's covered
-            </Typography>
+            <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 1.5 }}>
+              <Typography variant="h3">Who's covered</Typography>
+              <Button size="small" onClick={() => navigate('/family')}>
+                Manage
+              </Button>
+            </Stack>
             <Stack gap={1.5}>
               <Stack direction="row" alignItems="center" gap={1.5}>
                 <Avatar sx={{ bgcolor: 'primary.main' }}>{member.name.slice(0, 1)}</Avatar>

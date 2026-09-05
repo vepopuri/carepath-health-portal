@@ -27,9 +27,3 @@ export const dependents: Dependent[] = [
     memberId: 'mem_jordan_alvarez',
   },
 ];
-
-/** All covered people (the member plus their dependents) — useful for patient pickers. */
-export const coveredPeople = [
-  { id: member.id, name: member.name, relationship: 'self' as const },
-  ...dependents.map((d) => ({ id: d.id, name: d.name, relationship: d.relationship })),
-];

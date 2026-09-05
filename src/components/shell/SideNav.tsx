@@ -9,6 +9,7 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined';
 import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
+import FamilyRestroomOutlinedIcon from '@mui/icons-material/FamilyRestroomOutlined';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import ReceiptLongOutlinedIcon from '@mui/icons-material/ReceiptLongOutlined';
 import FactCheckOutlinedIcon from '@mui/icons-material/FactCheckOutlined';
@@ -22,6 +23,7 @@ type NavGroup = 'Care' | 'Claims & billing';
 export const NAV_ITEMS: { key: string; label: string; path: string; icon: typeof DashboardOutlinedIcon; group?: NavGroup }[] = [
   { key: 'overview', label: 'Overview', path: '/', icon: DashboardOutlinedIcon },
   { key: 'plan', label: 'My Plan', path: '/plan', icon: ArticleOutlinedIcon, group: 'Care' },
+  { key: 'family', label: 'Family', path: '/family', icon: FamilyRestroomOutlinedIcon, group: 'Care' },
   { key: 'find-care', label: 'Find Care', path: '/find-care', icon: SearchOutlinedIcon, group: 'Care' },
   { key: 'claims', label: 'Claims', path: '/claims', icon: ReceiptLongOutlinedIcon, group: 'Claims & billing' },
   { key: 'prior-authorizations', label: 'Prior Authorizations', path: '/prior-authorizations', icon: FactCheckOutlinedIcon, group: 'Claims & billing' },
