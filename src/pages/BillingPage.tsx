@@ -16,9 +16,8 @@ import LinearProgress from '@mui/material/LinearProgress';
 import PaymentsOutlinedIcon from '@mui/icons-material/PaymentsOutlined';
 import { PageHeader } from '../components/common/PageHeader';
 import { StatusBadge } from '../components/common/StatusBadge';
-import { paymentService } from '../services';
-import { plan } from '../data/plan';
-import type { Payment } from '../types/domain';
+import { paymentService, planService } from '../services';
+import type { Payment, Plan } from '../types/domain';
 
 function formatMoney(n: number): string {
   return `$${n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -26,6 +25,7 @@ function formatMoney(n: number): string {
 
 export function BillingPage() {
   const [payments, setPayments] = useState<Payment[]>([]);
+  const [plan, setPlan] = useState<Plan | null>(null);
   const [loading, setLoading] = useState(true);
   const [payingId, setPayingId] = useState<string | null>(null);
   const [confirmation, setConfirmation] = useState<string | null>(null);
@@ -40,9 +40,18 @@ export function BillingPage() {
 
   useEffect(() => {
     refresh();
+    planService.getPlan().then(setPlan);
   }, []);
 
   const upcoming = payments.find((p) => p.status === 'scheduled' || p.status === 'pending');
+
+  if (!plan) {
+    return (
+      <Box>
+        <LinearProgress sx={{ mb: 2 }} />
+      </Box>
+    );
+  }
 
   async function handlePayNow(id: string) {
     setPayingId(id);

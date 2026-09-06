@@ -2,6 +2,12 @@ node_modules
 dist
 dist-ssr
 *.local
+
+# SQLite database (seeded automatically on first server start)
+server/*.db
+server/*.db-journal
+server/*.db-wal
+server/*.db-shm
 .env
 .env.*
 !.env.example

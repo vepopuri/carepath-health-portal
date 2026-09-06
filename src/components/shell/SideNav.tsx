@@ -15,8 +15,10 @@ import ReceiptLongOutlinedIcon from '@mui/icons-material/ReceiptLongOutlined';
 import FactCheckOutlinedIcon from '@mui/icons-material/FactCheckOutlined';
 import PaymentsOutlinedIcon from '@mui/icons-material/PaymentsOutlined';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
+import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { member } from '../../data/member';
+import { memberService } from '../../services';
+import type { Member } from '../../types/domain';
 
 type NavGroup = 'Care' | 'Claims & billing';
 
@@ -38,6 +40,11 @@ export const DRAWER_WIDTH = 240;
 export function SideNav({ mobileOpen, onClose }: { mobileOpen: boolean; onClose: () => void }) {
   const location = useLocation();
   const navigate = useNavigate();
+  const [member, setMember] = useState<Member | null>(null);
+
+  useEffect(() => {
+    memberService.getMember().then(setMember);
+  }, []);
 
   const ungrouped = NAV_ITEMS.filter((item) => !item.group);
   const grouped = GROUP_ORDER.map((group) => ({ group, items: NAV_ITEMS.filter((item) => item.group === group) }));
@@ -92,10 +99,10 @@ export function SideNav({ mobileOpen, onClose }: { mobileOpen: boolean; onClose:
           Signed in as
         </Typography>
         <Typography variant="body2" sx={{ color: '#fff', fontWeight: 600 }}>
-          {member.name}
+          {member?.name}
         </Typography>
         <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.55)' }}>
-          Member #{member.memberNumber}
+          Member #{member?.memberNumber}
         </Typography>
       </Box>
     </Box>

@@ -14,15 +14,21 @@ import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CarePathMark } from '../common/CarePathMark';
-import { member } from '../../data/member';
+import { memberService } from '../../services';
+import type { Member } from '../../types/domain';
 
 export function Header({ onMenuClick }: { onMenuClick: () => void }) {
   const navigate = useNavigate();
   const [profileAnchor, setProfileAnchor] = useState<null | HTMLElement>(null);
   const [notifAnchor, setNotifAnchor] = useState<null | HTMLElement>(null);
+  const [member, setMember] = useState<Member | null>(null);
+
+  useEffect(() => {
+    memberService.getMember().then(setMember);
+  }, []);
 
   return (
     <AppBar
@@ -102,15 +108,15 @@ export function Header({ onMenuClick }: { onMenuClick: () => void }) {
         <Tooltip title="Account">
           <IconButton onClick={(e) => setProfileAnchor(e.currentTarget)} aria-label="Account menu">
             <Avatar sx={{ width: 30, height: 30, bgcolor: 'secondary.main', color: '#fff', fontSize: '0.85rem', fontWeight: 700 }}>
-              {member.name.slice(0, 1)}
+              {member?.name.slice(0, 1) ?? ''}
             </Avatar>
           </IconButton>
         </Tooltip>
         <Menu anchorEl={profileAnchor} open={Boolean(profileAnchor)} onClose={() => setProfileAnchor(null)}>
           <Box sx={{ px: 2, py: 1, minWidth: 200 }}>
-            <Typography variant="subtitle2">{member.name}</Typography>
+            <Typography variant="subtitle2">{member?.name}</Typography>
             <Typography variant="caption" color="text.secondary">
-              Member #{member.memberNumber}
+              Member #{member?.memberNumber}
             </Typography>
           </Box>
         </Menu>
