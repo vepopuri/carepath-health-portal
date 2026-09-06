@@ -7,6 +7,9 @@ import InputBase from '@mui/material/InputBase';
 import Box from '@mui/material/Box';
 import Badge from '@mui/material/Badge';
 import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
 import Avatar from '@mui/material/Avatar';
 import Divider from '@mui/material/Divider';
 import Tooltip from '@mui/material/Tooltip';
@@ -14,21 +17,23 @@ import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-import { useEffect, useState } from 'react';
+import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CarePathMark } from '../common/CarePathMark';
-import { memberService } from '../../services';
-import type { Member } from '../../types/domain';
+import { useAuth } from '../../context/AuthContext';
 
 export function Header({ onMenuClick }: { onMenuClick: () => void }) {
   const navigate = useNavigate();
+  const { member, logout } = useAuth();
   const [profileAnchor, setProfileAnchor] = useState<null | HTMLElement>(null);
   const [notifAnchor, setNotifAnchor] = useState<null | HTMLElement>(null);
-  const [member, setMember] = useState<Member | null>(null);
 
-  useEffect(() => {
-    memberService.getMember().then(setMember);
-  }, []);
+  async function handleSignOut() {
+    setProfileAnchor(null);
+    await logout();
+    navigate('/login', { replace: true });
+  }
 
   return (
     <AppBar
@@ -119,6 +124,13 @@ export function Header({ onMenuClick }: { onMenuClick: () => void }) {
               Member #{member?.memberNumber}
             </Typography>
           </Box>
+          <Divider />
+          <MenuItem onClick={handleSignOut}>
+            <ListItemIcon>
+              <LogoutOutlinedIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>Sign out</ListItemText>
+          </MenuItem>
         </Menu>
       </Toolbar>
     </AppBar>

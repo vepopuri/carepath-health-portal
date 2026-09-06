@@ -15,10 +15,8 @@ import ReceiptLongOutlinedIcon from '@mui/icons-material/ReceiptLongOutlined';
 import FactCheckOutlinedIcon from '@mui/icons-material/FactCheckOutlined';
 import PaymentsOutlinedIcon from '@mui/icons-material/PaymentsOutlined';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
-import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { memberService } from '../../services';
-import type { Member } from '../../types/domain';
+import { useAuth } from '../../context/AuthContext';
 
 type NavGroup = 'Care' | 'Claims & billing';
 
@@ -40,11 +38,7 @@ export const DRAWER_WIDTH = 240;
 export function SideNav({ mobileOpen, onClose }: { mobileOpen: boolean; onClose: () => void }) {
   const location = useLocation();
   const navigate = useNavigate();
-  const [member, setMember] = useState<Member | null>(null);
-
-  useEffect(() => {
-    memberService.getMember().then(setMember);
-  }, []);
+  const { member } = useAuth();
 
   const ungrouped = NAV_ITEMS.filter((item) => !item.group);
   const grouped = GROUP_ORDER.map((group) => ({ group, items: NAV_ITEMS.filter((item) => item.group === group) }));

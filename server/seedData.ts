@@ -33,6 +33,9 @@ export const seedMember: Member = {
   planId: 'plan_gold_ppo_2026',
 };
 
+/** The one demo account's login password — shown on the login page itself, since there's nothing real to protect. */
+export const demoPassword = 'CarePath123!';
+
 export const seedDependents: Dependent[] = [
   {
     id: 'dep_rowan_alvarez',

@@ -10,8 +10,9 @@ the same standard, in the same architectural style, as a demonstration.
 
 ## What this app is
 
-A member logs in (there's no real auth in this demo — you're always signed in as the seeded demo
-member, Jordan Alvarez) and can:
+A member signs in — there's still only one seeded account, Jordan Alvarez, but signing in is a
+real login backed by a hashed password and a server-side session (see "Login" below for the
+demo credentials) — and can:
 
 - **Overview** — plan snapshot, deductible/out-of-pocket progress, recent activity, who's covered.
 - **My Plan** — coverage details by category, deductible and out-of-pocket tracking (individual and family).
@@ -28,10 +29,26 @@ member, Jordan Alvarez) and can:
 The **domain** is a demo — every page carries a "Demo data" chip, no real insurer, payment
 processor, or provider directory is called, and filing a claim or paying a premium never contacts
 anyone real. But the **stack underneath it is real**: a small Express API backed by a SQLite
-database that persists to disk. Filing a claim, adding a dependent, or paying a premium performs
-a real HTTP request and a real database write that survives a server restart — it's not
-`localStorage` sleight of hand. This mirrors how the Octopus platform itself started before its
-first two live integrations (a real GitHub PR and a real OSV.dev dependency scan) were added.
+database that persists to disk, with real login sessions on top. Filing a claim, adding a
+dependent, or paying a premium performs a real HTTP request and a real database write that
+survives a server restart — it's not `localStorage` sleight of hand. This mirrors how the Octopus
+platform itself started before its first two live integrations (a real GitHub PR and a real
+OSV.dev dependency scan) were added.
+
+## Login
+
+There's one seeded member — sign in with:
+
+```
+jordan.alvarez@example.com
+CarePath123!
+```
+
+(The login page also shows these credentials directly, since this is a demo with nothing real to
+protect.) The password is stored as a salted hash (Node's `scrypt`, never plaintext), and signing
+in creates a session row in SQLite with an HTTP-only cookie — sessions survive a server restart
+the same way the rest of the app's data does. There's still only one account; anyone with the demo
+credentials sees the same data.
 
 ## Architecture
 
@@ -51,6 +68,8 @@ server/db.ts                SQLite connection (better-sqlite3) + schema creation
 server/seedData.ts          Demo seed data (member, plan, providers, claims, …)
 server/seed.ts              Seeds empty tables on first run; idempotent on every later start
 server/routes/*.ts          One Express router per resource (member, plan, providers, claims, …)
+server/auth.ts               Password hashing, session creation/lookup, and the requireAuth
+                            middleware guarding every route except /api/auth/*
 ```
 
 In dev, Vite (the frontend) and the Express API run as two processes; Vite proxies `/api/*`
@@ -75,8 +94,8 @@ time the API starts, and is gitignored — delete it to reset the demo back to i
 This first pass covers the core "check my coverage, find a doctor, file and track a claim, pay my
 bill" loop. Not yet built (left for a fast-follow, same as Octopus's own iterative history):
 
-- Real authentication. The API and database are multi-request-ready, but there's still only one
-  member and no login — every request is always "Jordan Alvarez."
+- Multi-tenancy. Login is real, but there's still only one account — every session is Jordan
+  Alvarez. Signup, multiple members, and per-member data isolation are natural next steps.
 - A **Messages** / support-ticket page.
 - A **Profile / Settings** page (contact info, notification preferences).
 - Provider detail pages don't yet support real appointment booking (deliberately disabled with a

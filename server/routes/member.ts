@@ -1,12 +1,14 @@
 import { Router } from 'express';
 import { randomUUID } from 'node:crypto';
 import { db } from '../db.js';
+import { toPublicMember, type MemberRow } from '../auth.js';
 import type { Dependent, Member, Relationship } from '../../src/types/domain.js';
 
 export const memberRouter = Router();
 
 function getMember(): Member {
-  return db.prepare('SELECT * FROM members LIMIT 1').get() as Member;
+  const row = db.prepare('SELECT * FROM members LIMIT 1').get() as MemberRow;
+  return toPublicMember(row);
 }
 
 function listDependents(memberId: string): Dependent[] {

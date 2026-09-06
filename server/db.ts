@@ -18,7 +18,14 @@ db.exec(`
     phone TEXT NOT NULL,
     dateOfBirth TEXT NOT NULL,
     address TEXT NOT NULL,
-    planId TEXT NOT NULL
+    planId TEXT NOT NULL,
+    passwordHash TEXT
+  );
+
+  CREATE TABLE IF NOT EXISTS sessions (
+    token TEXT PRIMARY KEY,
+    memberId TEXT NOT NULL REFERENCES members(id),
+    expiresAt TEXT NOT NULL
   );
 
   CREATE TABLE IF NOT EXISTS dependents (
@@ -131,3 +138,10 @@ db.exec(`
     relatedClaimId TEXT
   );
 `);
+
+// Migration for databases created before login support existed: add the
+// column CREATE TABLE IF NOT EXISTS won't retrofit onto an existing table.
+const memberColumns = db.prepare('PRAGMA table_info(members)').all() as { name: string }[];
+if (!memberColumns.some((c) => c.name === 'passwordHash')) {
+  db.exec('ALTER TABLE members ADD COLUMN passwordHash TEXT');
+}

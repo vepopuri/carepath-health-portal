@@ -1,3 +1,4 @@
+export { authService } from './authService';
 export { memberService, type AddDependentInput, type CoveredPerson } from './memberService';
 export { planService } from './planService';
 export { providerService, type ProviderFilters } from './providerService';

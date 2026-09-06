@@ -1,4 +1,5 @@
 import { db } from './db.js';
+import { hashPassword } from './auth.js';
 import {
   seedMember,
   seedDependents,
@@ -8,6 +9,7 @@ import {
   seedPriorAuthorizations,
   seedPayments,
   seedDocuments,
+  demoPassword,
 } from './seedData.js';
 
 function isEmpty(table: string): boolean {
@@ -18,9 +20,15 @@ function isEmpty(table: string): boolean {
 export function seedDatabaseIfEmpty(): void {
   if (isEmpty('members')) {
     db.prepare(
-      `INSERT INTO members (id, name, memberNumber, email, phone, dateOfBirth, address, planId)
-       VALUES (@id, @name, @memberNumber, @email, @phone, @dateOfBirth, @address, @planId)`,
-    ).run(seedMember);
+      `INSERT INTO members (id, name, memberNumber, email, phone, dateOfBirth, address, planId, passwordHash)
+       VALUES (@id, @name, @memberNumber, @email, @phone, @dateOfBirth, @address, @planId, @passwordHash)`,
+    ).run({ ...seedMember, passwordHash: hashPassword(demoPassword) });
+  } else {
+    // Backfills a login password onto a database created before login support existed.
+    const existing = db.prepare('SELECT passwordHash FROM members WHERE id = ?').get(seedMember.id) as { passwordHash: string | null } | undefined;
+    if (existing && !existing.passwordHash) {
+      db.prepare('UPDATE members SET passwordHash = ? WHERE id = ?').run(hashPassword(demoPassword), seedMember.id);
+    }
   }
 
   if (isEmpty('dependents')) {
